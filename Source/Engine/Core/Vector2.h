@@ -27,6 +27,12 @@ namespace kiko
 		Vector2& operator -= (const Vector2& v) { x -= v.x; y -= v.y; return *this; }
 		Vector2& operator /= (const Vector2& v) { x /= v.x; y /= v.y; return *this; }
 		Vector2& operator *= (const Vector2& v) { x *= v.x; y *= v.y; return *this; }
+
+		float LengthSqr() { return (x * x) + (y * y); }
+		float Length() { return sqrt(LengthSqr()); }
+
+		Vector2 Normalized() { return *this / Length(); }
+		void Nomalize() { *this /= Length(); }
 	};
 
 	using vec2 = Vector2;

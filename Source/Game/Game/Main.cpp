@@ -1,6 +1,8 @@
 #include <iostream>
 #include "Renderer/Renderer.h"
 #include "Core/Core.h"
+#include "Renderer/Model.h"
+#include "Input/InputSystem.h"
 #include <chrono>
 #include <vector>
 
@@ -9,7 +11,7 @@ using namespace std;
 class Star
 {
 public:
-	Star(const kiko::Vector2& pos, const kiko::Vector2& vel) :
+	Star(const kiko::vec2& pos, const kiko::vec2& vel) :
 		m_pos{pos},
 		m_vel{vel}
 	{}
@@ -31,8 +33,8 @@ public:
 	}
 
 public:
-	kiko::Vector2 m_pos;
-	kiko::Vector2 m_vel;
+	kiko::vec2 m_pos;
+	kiko::vec2 m_vel;
 };
 
 
@@ -46,6 +48,15 @@ int main(int argc, char* argv[])
 	renderer.Initialize();
 	renderer.CreateWindow("CSC196", 800, 600);
 
+	kiko::InputSystem inputSystem;
+	inputSystem.Initialize();
+
+	std::vector<kiko::vec2> points{{-10, 5}, { 10,5 }, { 0,-5 }, { -10, 5 }};
+	kiko::Model model(points);
+
+	kiko::vec2 v{5, 5};
+	v.Nomalize();
+
 	vector<Star> stars;
 	for (int i = 0; i < 1000; i++) {
 		kiko::Vector2 pos(kiko::random(renderer.GetWidth()), kiko::random(renderer.GetHeight()));
@@ -54,8 +65,29 @@ int main(int argc, char* argv[])
 		stars.push_back(Star(pos,vel));
 	}
 
-	while (true)
+	bool quit = false;
+	while (!quit)
 	{
+		inputSystem.Update();
+		if (inputSystem.GetKeyDown(SDL_SCANCODE_ESCAPE))
+		{
+			quit = true;
+		}
+		if (inputSystem.GetMouseButtonDown(0))
+		{
+			cout << "Left Mouse Button down." << endl;
+		}if (inputSystem.GetMouseButtonDown(1))
+		{
+			cout << "Middle Mouse Button down." << endl;
+		}
+		if (inputSystem.GetMouseButtonDown(2))
+		{
+			cout << "Right Mouse Button down." << endl;
+		}
+
+		cout << inputSystem.GetMousePosition().x << ", " << inputSystem.GetMousePosition().y << endl;
+
+
 		renderer.SetColor(0, 0, 0, 0);
 		renderer.BeginFrame();
 		//draw
@@ -68,12 +100,11 @@ int main(int argc, char* argv[])
 			renderer.SetColor(kiko::random(256), kiko::random(256), kiko::random(256), 255);
 			star.Draw(renderer);
 		}
-		//for (int i = 0; i < 10000; i++) {
-		//	kiko::Vector2 pos(kiko::random(renderer.GetWidth()), kiko::random(renderer.GetHeight()));
-		//	renderer.SetColor(kiko::random(256), kiko::random(256), kiko::random(256), 255);
-		//	renderer.DrawPoint(pos.x, pos.y);
-		//	
-		//}
+		
+		model.Draw(renderer, {400,300}, 4);
+
 		renderer.EndFrame();
 	}
+
+	return 0;
 }
