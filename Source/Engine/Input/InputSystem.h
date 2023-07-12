@@ -22,8 +22,8 @@ namespace kiko
 
 		const Vector2& GetMousePosition() const { return m_mousePosition; }
 
-		bool GetMouseButtonDown(uint8_t button) { return m_mouseButtonState[button]; };
-		bool GetMousePreviousButtonDown(uint8_t button) { return m_prevMouseButtonState[button]; };
+		bool GetMouseButtonDown(uint8_t button) { return m_mouseButtonState[button]; }
+		bool GetMousePreviousButtonDown(uint8_t button) { return m_prevMouseButtonState[button]; }
 	private:
 		std::vector<uint8_t> m_keyboardState;
 		std::vector<uint8_t> m_prevKeyboardState;
