@@ -38,4 +38,5 @@ namespace kiko
 		SDL_Window* m_window = nullptr;
 	};
 
+	extern Renderer g_Renderer;
 }
