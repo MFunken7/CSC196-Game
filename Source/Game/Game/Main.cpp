@@ -3,8 +3,9 @@
 #include "Core/Core.h"
 #include "Renderer/Model.h"
 #include "Input/InputSystem.h"
+#include "Audio/AudioSystem.h"
 #include "Core/Time.h"
-#include "Actor.h"
+#include "Framework/Scene.h"
 #include "Player.h"
 #include "Enemey.h"
 #include <chrono>
@@ -58,6 +59,9 @@ int main(int argc, char* argv[])
 
 	kiko::g_InputSystem.Initialize();
 
+	kiko::g_AudioSystem.Initialize();
+	kiko::g_AudioSystem.AddAudio("laser", "laser-gun.wav");
+
 	//std::vector<kiko::vec2> points{{-10, 5}, { 10,5 }, { 0,-5 }, { -10, 5 }};
 	kiko::Model model;
 
@@ -74,17 +78,13 @@ int main(int argc, char* argv[])
 		stars.push_back(Star(pos,vel));
 	}
 
-	kiko::Transform transform{ {400,300}, 0, 3 };
+	kiko::Scene scene;
 
-	float speed = 50;
-	float turnRate = kiko::DegreesToRadians(180.0f);
-
-	Player player{200, kiko::Pi, { {400, 300}, 0, 6 }, model };
+	scene.Add(new Player{ 200, kiko::Pi, { {400, 300}, 0, 6 }, model });
 
 	std::vector<Enemey> enemies;
-	for (int i = 0; i < 10; i++) {
-		Enemey enemey{ 20, kiko::Pi, { {kiko::random(600), kiko::random(600)}, kiko::randomf(kiko::TwoPi), 3}, model};
-		enemies.push_back(enemey);
+	for (int i = 0; i < 5; i++) {
+		scene.Add(new Enemey{ 20, kiko::Pi, { {kiko::random(600), kiko::random(600)}, kiko::randomf(kiko::TwoPi), 3}, model });
 	}
 
 	//main game loop
@@ -99,9 +99,8 @@ int main(int argc, char* argv[])
 			quit = true;
 		}
 		//update
-		player.Update(kiko::g_time.GetDeltaTime());
-		for(auto& enemey : enemies) enemey.Update(kiko::g_time.GetDeltaTime());
-
+		kiko::g_AudioSystem.Update();
+		scene.Update(kiko::g_time.GetDeltaTime());
 
 
 		if (kiko::g_InputSystem.GetMouseButtonDown(0))
@@ -118,6 +117,7 @@ int main(int argc, char* argv[])
 
 		cout << kiko::g_InputSystem.GetMousePosition().x << ", " << kiko::g_InputSystem.GetMousePosition().y << endl;
 
+	
 		
 
 		/*kiko::vec2 direction;
@@ -142,8 +142,8 @@ int main(int argc, char* argv[])
 			star.Draw(kiko::g_Renderer);
 		}
 		
-		player.Draw(kiko::g_Renderer);
-		for (auto& enemey : enemies) enemey.Draw(kiko::g_Renderer);
+		kiko::g_Renderer.SetColor(255, 255, 255, 255);
+		scene.Draw(kiko::g_Renderer);
 
 		kiko::g_Renderer.EndFrame();
 
