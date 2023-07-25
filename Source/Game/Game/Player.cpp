@@ -5,6 +5,7 @@
 #include "Weapon.h"
 #include "Framework/Scene.h"
 #include "Audio/AudioSystem.h"
+#include "SpaceGame.h"
 
 void Player::Update(float dt)
 {
@@ -34,10 +35,12 @@ void Player::Update(float dt)
 }
 void Player::OnCollission(Actor* other)
 {
-	if (other->m_tag == "EnemyBullet") {
+	if (other->m_tag == "EnemeyBullet") {
 		m_health -= 10;
 		if (m_health <= 0) {
+			m_game->SetLives(m_game->GetLives() - 1);
 			m_destroyed = true;
+			dynamic_cast<SpaceGame*>(m_game)->SetState(SpaceGame::eState::PlayerDead);
 		}
 	}
 }

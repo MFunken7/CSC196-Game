@@ -10,6 +10,8 @@
 #include "Enemey.h"
 #include "Renderer/Text.h"
 
+#include "SpaceGame.h"
+
 #include <chrono>
 #include <vector>
 #include <thread>
@@ -55,28 +57,16 @@ int main(int argc, char* argv[])
 	kiko::setFilePath("assets");
 
 
-
+	// Initialize Engine
 	kiko::g_Renderer.Initialize();
 	kiko::g_Renderer.CreateWindow("CSC196", 800, 600);
 
 	kiko::g_InputSystem.Initialize();
-
 	kiko::g_AudioSystem.Initialize();
-	kiko::g_AudioSystem.AddAudio("laser", "laser-gun.wav");
 
-	// create font / text objects
-	std::shared_ptr<kiko::Font> font = std::make_shared<kiko::Font>("BlackHanSans-Regular.ttf", 24);
-	std::unique_ptr<kiko::Text> text = std::make_unique<kiko::Text>(font);
-	text->Create(kiko::g_Renderer, "NEUMONT", kiko::Color{1, 1, 1, 1});
+	unique_ptr<SpaceGame> game = make_unique<SpaceGame>();
+	game->Initialize();
 
-
-	//std::vector<kiko::vec2> points{{-10, 5}, { 10,5 }, { 0,-5 }, { -10, 5 }};
-
-
-	
-
-	kiko::vec2 v{5, 5};
-	v.Nomalize();
 
 	vector<Star> stars;
 	for (int i = 0; i < 1000; i++) {
@@ -86,17 +76,7 @@ int main(int argc, char* argv[])
 		stars.push_back(Star(pos,vel));
 	}
 
-	kiko::Scene scene;
-	unique_ptr<Player> player = make_unique<Player>(200.0f, kiko::Pi, kiko::Transform{ {400, 300}, 0, 6 }, kiko::g_manager.Get("ship.txt"));
-	player->m_tag = "Player";
-	scene.Add(move(player));
-
-	std::vector<Enemey> enemies;
-	for (int i = 0; i < 5; i++) {
-		unique_ptr<Enemey> enemey = make_unique<Enemey>(10.0f, kiko::Pi, kiko::Transform{ {kiko::random(600), kiko::random(600)}, kiko::randomf(kiko::TwoPi), 3 }, kiko::g_manager.Get("ship.txt"));
-		enemey->m_tag = "Enemey";
-		scene.Add(move(enemey));
-	}
+	
 
 	//main game loop
 	bool quit = false;
@@ -111,33 +91,10 @@ int main(int argc, char* argv[])
 		}
 		//update
 		kiko::g_AudioSystem.Update();
-		scene.Update(kiko::g_time.GetDeltaTime());
+		game->Update(kiko::g_time.GetDeltaTime());
 
 
-		//if (kiko::g_InputSystem.GetMouseButtonDown(0))
-		//{
-		//	cout << "Left Mouse Button down." << endl;
-		//}if (kiko::g_InputSystem.GetMouseButtonDown(1))
-		//{
-		//	cout << "Middle Mouse Button down." << endl;
-		//}
-		//if (kiko::g_InputSystem.GetMouseButtonDown(2))
-		//{
-		//	cout << "Right Mouse Button down." << endl;
-		//}
-
-		//cout << kiko::g_InputSystem.GetMousePosition().x << ", " << kiko::g_InputSystem.GetMousePosition().y << endl;
-
-	
 		
-
-		/*kiko::vec2 direction;
-		if (inputSystem.GetKeyDown(SDL_SCANCODE_W)) direction.y = -1;
-		if (inputSystem.GetKeyDown(SDL_SCANCODE_S)) direction.y = 1;
-		if (inputSystem.GetKeyDown(SDL_SCANCODE_A)) direction.x = -1;
-		if (inputSystem.GetKeyDown(SDL_SCANCODE_D)) direction.x = 1;
-		transform.position += direction * speed * kiko::g_time.GetDeltaTime();*/
-
 
 		//draw game
 		kiko::g_Renderer.SetColor(0, 0, 0, 0);
@@ -153,18 +110,39 @@ int main(int argc, char* argv[])
 			star.Draw(kiko::g_Renderer);
 		}
 
+		game->Draw(kiko::g_Renderer);
 
-		kiko::g_Renderer.SetColor(255, 255, 255, 255);
-		scene.Draw(kiko::g_Renderer);
-
-		text->Draw(kiko::g_Renderer, 400, 300);
+	//	text->Draw(kiko::g_Renderer, 400, 300);
 
 		kiko::g_Renderer.EndFrame();
-
-		//this_thread::sleep_for(chrono::milliseconds(100));
 	}
 
-	scene.RemoveAll();
+	stars.clear();
 
 	return 0;
 }
+
+
+//if (kiko::g_InputSystem.GetMouseButtonDown(0))
+		//{
+		//	cout << "Left Mouse Button down." << endl;
+		//}if (kiko::g_InputSystem.GetMouseButtonDown(1))
+		//{
+		//	cout << "Middle Mouse Button down." << endl;
+		//}
+		//if (kiko::g_InputSystem.GetMouseButtonDown(2))
+		//{
+		//	cout << "Right Mouse Button down." << endl;
+		//}
+
+		//cout << kiko::g_InputSystem.GetMousePosition().x << ", " << kiko::g_InputSystem.GetMousePosition().y << endl;
+
+
+
+
+		/*kiko::vec2 direction;
+		if (inputSystem.GetKeyDown(SDL_SCANCODE_W)) direction.y = -1;
+		if (inputSystem.GetKeyDown(SDL_SCANCODE_S)) direction.y = 1;
+		if (inputSystem.GetKeyDown(SDL_SCANCODE_A)) direction.x = -1;
+		if (inputSystem.GetKeyDown(SDL_SCANCODE_D)) direction.x = 1;
+		transform.position += direction * speed * kiko::g_time.GetDeltaTime();*/

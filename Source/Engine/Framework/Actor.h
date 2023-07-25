@@ -22,13 +22,18 @@ namespace kiko
 
 		class Scene* m_scene = nullptr;
 		friend class Scene;
+		friend class Game;
 
 		kiko::Transform m_transform;
 		std::string m_tag;
 
+		class Game* m_game;
+
 	protected:
 		bool m_destroyed = false;
 		float m_lifespan = -1.0f;
+
+		
 
 		std::shared_ptr<Model> m_model;
 	};

@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "Weapon.h"
 #include "Audio/AudioSystem.h"
+#include "SpaceGame.h"
 
 
 void Enemey::Update(float dt)
@@ -40,6 +41,7 @@ void Enemey::OnCollission(Actor* other)
 	if (other->m_tag == "PlayerBullet") {
 		m_health -= 10;
 		if (m_health <= 0) {
+			m_game->AddPoints(100);
 			m_destroyed = true;
 		}
 	}
