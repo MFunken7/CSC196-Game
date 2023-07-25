@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include <SDL2-2.28.0/include/SDL.h>
+#include <SDL2-2.28.0/include/SDL_ttf.h>
 
 
 namespace kiko {
@@ -8,11 +9,16 @@ namespace kiko {
 	bool kiko::Renderer::Initialize()
 	{
 		SDL_Init(SDL_INIT_VIDEO);
+		TTF_Init();
+
 		return false;
 	}
 
 	void kiko::Renderer::Shutdown()
 	{
+		SDL_DestroyRenderer(m_renderer);
+		SDL_DestroyWindow(m_window);
+		TTF_Quit();
 	}
 
 	void kiko::Renderer::CreateWindow(const std::string& title, int width, int height)
@@ -35,7 +41,7 @@ namespace kiko {
 		SDL_RenderPresent(m_renderer);
 	}	
 
-	void kiko::Renderer::SetColor(int r, int g, int b, int a)
+	void kiko::Renderer::SetColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
 	{
 		SDL_SetRenderDrawColor(m_renderer, r, g, b, a);
 	}

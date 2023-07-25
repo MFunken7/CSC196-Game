@@ -1,12 +1,15 @@
 #include "Player.h"
 #include "Input/InputSystem.h"
 #include "Renderer/Renderer.h"
+#include"Renderer/ModelManager.h"
 #include "Weapon.h"
 #include "Framework/Scene.h"
 #include "Audio/AudioSystem.h"
 
 void Player::Update(float dt)
 {
+	Actor::Update(dt);
+
 	float rotate = 0;
 	if (kiko::g_InputSystem.GetKeyDown(SDL_SCANCODE_A)) rotate = -1;
 	if (kiko::g_InputSystem.GetKeyDown(SDL_SCANCODE_D)) rotate = 1;
@@ -22,9 +25,20 @@ void Player::Update(float dt)
 
 	if (kiko::g_InputSystem.GetKeyDown(SDL_SCANCODE_SPACE) && !kiko::g_InputSystem.GetPreviousKeyDown(SDL_SCANCODE_SPACE)) {
 		kiko::Transform transform{ m_transform.position, m_transform.rotation, 1};
-		Weapon* weapon = new Weapon{ 400, transform, m_model };
-		m_scene->Add(weapon);
+		std::unique_ptr<Weapon> weapon = std::make_unique<Weapon>(40.0f , transform, kiko::g_manager.Get("ship.txt"));
+		weapon->m_tag = "PlayerBullet";
+		m_scene->Add(std::move(weapon));
 		kiko::g_AudioSystem.PlayOneShot("laser");
+	}
+
+}
+void Player::OnCollission(Actor* other)
+{
+	if (other->m_tag == "EnemyBullet") {
+		m_health -= 10;
+		if (m_health <= 0) {
+			m_destroyed = true;
+		}
 	}
 }
 //if (kiko::g_InputSystem.GetKeyDown(SDL_SCANCODE_SPACE) && !kiko::g_InputSystem.GetPreviousKeyDown(SDL_SCANCODE_SPACE)) {

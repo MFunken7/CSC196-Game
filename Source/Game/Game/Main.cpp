@@ -1,16 +1,19 @@
 #include <iostream>
 #include "Renderer/Renderer.h"
 #include "Core/Core.h"
-#include "Renderer/Model.h"
+#include "Renderer/ModelManager.h"
 #include "Input/InputSystem.h"
 #include "Audio/AudioSystem.h"
 #include "Core/Time.h"
 #include "Framework/Scene.h"
 #include "Player.h"
 #include "Enemey.h"
+#include "Renderer/Text.h"
+
 #include <chrono>
 #include <vector>
 #include <thread>
+
 
 using namespace std;
 
@@ -46,9 +49,8 @@ public:
 
 int main(int argc, char* argv[])
 {
-	
-	constexpr float a = kiko::DegreesToRadians(180.f);
 
+	kiko::MemoryTracker::Initialize();
 	kiko::seedRandom((unsigned int)time(nullptr));
 	kiko::setFilePath("assets");
 
@@ -62,10 +64,16 @@ int main(int argc, char* argv[])
 	kiko::g_AudioSystem.Initialize();
 	kiko::g_AudioSystem.AddAudio("laser", "laser-gun.wav");
 
-	//std::vector<kiko::vec2> points{{-10, 5}, { 10,5 }, { 0,-5 }, { -10, 5 }};
-	kiko::Model model;
+	// create font / text objects
+	std::shared_ptr<kiko::Font> font = std::make_shared<kiko::Font>("BlackHanSans-Regular.ttf", 24);
+	std::unique_ptr<kiko::Text> text = std::make_unique<kiko::Text>(font);
+	text->Create(kiko::g_Renderer, "NEUMONT", kiko::Color{1, 1, 1, 1});
 
-	model.Load("ship.txt");
+
+	//std::vector<kiko::vec2> points{{-10, 5}, { 10,5 }, { 0,-5 }, { -10, 5 }};
+
+
+	
 
 	kiko::vec2 v{5, 5};
 	v.Nomalize();
@@ -79,12 +87,15 @@ int main(int argc, char* argv[])
 	}
 
 	kiko::Scene scene;
-
-	scene.Add(new Player{ 200, kiko::Pi, { {400, 300}, 0, 6 }, model });
+	unique_ptr<Player> player = make_unique<Player>(200.0f, kiko::Pi, kiko::Transform{ {400, 300}, 0, 6 }, kiko::g_manager.Get("ship.txt"));
+	player->m_tag = "Player";
+	scene.Add(move(player));
 
 	std::vector<Enemey> enemies;
 	for (int i = 0; i < 5; i++) {
-		scene.Add(new Enemey{ 20, kiko::Pi, { {kiko::random(600), kiko::random(600)}, kiko::randomf(kiko::TwoPi), 3}, model });
+		unique_ptr<Enemey> enemey = make_unique<Enemey>(10.0f, kiko::Pi, kiko::Transform{ {kiko::random(600), kiko::random(600)}, kiko::randomf(kiko::TwoPi), 3 }, kiko::g_manager.Get("ship.txt"));
+		enemey->m_tag = "Enemey";
+		scene.Add(move(enemey));
 	}
 
 	//main game loop
@@ -103,19 +114,19 @@ int main(int argc, char* argv[])
 		scene.Update(kiko::g_time.GetDeltaTime());
 
 
-		if (kiko::g_InputSystem.GetMouseButtonDown(0))
-		{
-			cout << "Left Mouse Button down." << endl;
-		}if (kiko::g_InputSystem.GetMouseButtonDown(1))
-		{
-			cout << "Middle Mouse Button down." << endl;
-		}
-		if (kiko::g_InputSystem.GetMouseButtonDown(2))
-		{
-			cout << "Right Mouse Button down." << endl;
-		}
+		//if (kiko::g_InputSystem.GetMouseButtonDown(0))
+		//{
+		//	cout << "Left Mouse Button down." << endl;
+		//}if (kiko::g_InputSystem.GetMouseButtonDown(1))
+		//{
+		//	cout << "Middle Mouse Button down." << endl;
+		//}
+		//if (kiko::g_InputSystem.GetMouseButtonDown(2))
+		//{
+		//	cout << "Right Mouse Button down." << endl;
+		//}
 
-		cout << kiko::g_InputSystem.GetMousePosition().x << ", " << kiko::g_InputSystem.GetMousePosition().y << endl;
+		//cout << kiko::g_InputSystem.GetMousePosition().x << ", " << kiko::g_InputSystem.GetMousePosition().y << endl;
 
 	
 		
@@ -141,14 +152,19 @@ int main(int argc, char* argv[])
 			kiko::g_Renderer.SetColor(kiko::random(256), kiko::random(256), kiko::random(256), 255);
 			star.Draw(kiko::g_Renderer);
 		}
-		
+
+
 		kiko::g_Renderer.SetColor(255, 255, 255, 255);
 		scene.Draw(kiko::g_Renderer);
+
+		text->Draw(kiko::g_Renderer, 400, 300);
 
 		kiko::g_Renderer.EndFrame();
 
 		//this_thread::sleep_for(chrono::milliseconds(100));
 	}
+
+	scene.RemoveAll();
 
 	return 0;
 }

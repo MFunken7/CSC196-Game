@@ -1,39 +1,17 @@
-#include "memory.h"
+#include "Memory.h"
 #include <iostream>
 
-using namespace std;
-
-kiko::MemoryTracker kiko::g_memoryTracker;
-
-void* operator new(size_t size) {
-	void* p = malloc(size);
-
-	kiko::g_memoryTracker.Add(p, size);
-
-	return p;
-}
-
-void operator delete (void* address, size_t size) {
-	kiko::g_memoryTracker.Remove(address,size);
-	free(address);
-}
-
-namespace kiko {
-	void MemoryTracker::Add(void* address, size_t size)
+namespace kiko
+{
+	bool MemoryTracker::Initialize()
 	{
-		m_bytesAllocated += size;
-		m_numAllocations++;
-	}
+		_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
-	void MemoryTracker::Remove(void* address, size_t size)
-	{
-		m_bytesAllocated -= size;
-		m_numAllocations--;
+		return true;
 	}
 
 	void MemoryTracker::DisplayInfo()
 	{
-		cout << "current bytes allocated: " << m_bytesAllocated << endl;
-		cout << "current number allocated: " << m_numAllocations << endl;
+		_CrtMemDumpAllObjectsSince(NULL);
 	}
 }
