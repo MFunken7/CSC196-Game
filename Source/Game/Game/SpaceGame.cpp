@@ -10,6 +10,9 @@
 #include "Renderer/Text.h"
 #include "Renderer/ModelManager.h"
 
+#include "Framework/Emitter.h"
+#include "Renderer/ParticleSystem.h"
+
 bool SpaceGame::Initialize()
 {
 	// create font / text objects
@@ -28,6 +31,8 @@ bool SpaceGame::Initialize()
 	kiko::g_AudioSystem.AddAudio("laser", "laser-gun.wav");
 
 	m_scene = std::make_unique<kiko::Scene>();
+
+	
 	
 	/*std::vector<Enemey> enemies;
 	for (int i = 0; i < 5; i++) {
@@ -79,6 +84,27 @@ void SpaceGame::Update(float dt)
 			enemey->m_game = this;
 			m_scene->Add(move(enemey));
 		}
+
+		{
+			kiko::EmitterData data;
+			data.burst = true;
+			data.burstCount = 100;
+			data.spawnRate = 200;
+			data.angle = 0;
+			data.angleRange = kiko::Pi;
+			data.lifetimeMin = 0.5f;
+			data.lifetimeMax = 1.5f;
+			data.speedMin = 50;
+			data.speedMax = 250;
+			data.damping = 0.5f;
+			data.color = kiko::Color{ 1, 0, 0, 1 };
+			kiko::Transform transform{ { kiko::g_InputSystem.GetMousePosition() }, 0, 1 };
+			auto emitter = std::make_unique<kiko::Emitter>(transform, data);
+			emitter->SetLifespan(1.0f);
+			m_scene->Add(std::move(emitter));
+		}
+		
+
 		break;
 	case SpaceGame::eState::PlayerDeadStart:
 		m_stateTimer = 200;
@@ -107,7 +133,7 @@ void SpaceGame::Update(float dt)
 	}
 
 	m_scoreText->Create(kiko::g_Renderer, "SCORE " + std::to_string(m_score), {1,1,1,1});
-	m_scene->Update(dt);
+ 	m_scene->Update(dt);
 }
 
 void SpaceGame::Draw(kiko::Renderer& renderer)
@@ -119,5 +145,6 @@ void SpaceGame::Draw(kiko::Renderer& renderer)
 		m_gameOverText->Draw(renderer, 350, 300);
 	}
 	m_scoreText->Draw(renderer, 40, 40);
+	kiko::g_particleSystem.Draw(renderer);
 	m_scene->Draw(renderer);
 }

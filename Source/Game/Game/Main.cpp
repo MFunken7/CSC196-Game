@@ -10,6 +10,8 @@
 #include "Enemey.h"
 #include "Renderer/Text.h"
 
+#include "Renderer/ParticleSystem.h"
+
 #include "SpaceGame.h"
 
 #include <chrono>
@@ -91,10 +93,18 @@ int main(int argc, char* argv[])
 		}
 		//update
 		kiko::g_AudioSystem.Update();
+		
+
 		game->Update(kiko::g_time.GetDeltaTime());
 
+		kiko::g_particleSystem.Update(kiko::g_time.GetDeltaTime());
 
 		
+
+		
+
+
+
 
 		//draw game
 		kiko::g_Renderer.SetColor(0, 0, 0, 0);

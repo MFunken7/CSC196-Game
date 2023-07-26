@@ -1,4 +1,5 @@
 #include "Scene.h"
+#include "Framework/Emitter.h"
 
 namespace kiko
 {

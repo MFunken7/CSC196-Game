@@ -13,15 +13,22 @@ namespace kiko
 		m_transform{ transform },
 		m_model{ model }
 		{}
+		Actor(const kiko::Transform& transform) :
+			m_transform{ transform }
+		{}
 
 		virtual void Update(float dt);
 		virtual void Draw(kiko::Renderer& renderer);
 
-		float GetRadius() { return m_model->GetRadius() * m_transform.scale; }
+		float GetRadius() { return (m_model) ? m_model->GetRadius() * m_transform.scale : 0; }
 		virtual void OnCollission(Actor* other) {}
 
 		void Addforce(vec2 force) { m_velocity += force; }
 		void SetDamping(float damping) { m_damping = damping; }
+
+		float GetLifespan() const { return m_lifespan; }
+		void SetLifespan(float lifespan) { m_lifespan = lifespan; }
+
 
 		class Scene* m_scene = nullptr;
 		friend class Scene;
