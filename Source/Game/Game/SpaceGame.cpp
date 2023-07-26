@@ -19,6 +19,11 @@ bool SpaceGame::Initialize()
 
 	m_titleText = std::make_unique<kiko::Text>(m_font);
 	m_titleText->Create(kiko::g_Renderer, "SPACE", kiko::Color{1, 1, 1, 1});
+
+	m_gameOverText = std::make_unique<kiko::Text>(m_font);
+	m_gameOverText->Create(kiko::g_Renderer, "GAME OVER", kiko::Color{1, 1, 1, 1});
+
+
 	//load audio
 	kiko::g_AudioSystem.AddAudio("laser", "laser-gun.wav");
 
@@ -56,9 +61,10 @@ void SpaceGame::Update(float dt)
 	case SpaceGame::eState::StartLevel:
 		m_scene->RemoveAll();
 	{
-		std::unique_ptr<Player> player = std::make_unique<Player>(200.0f, kiko::Pi, kiko::Transform{ {400, 300}, 0, 6 }, kiko::g_manager.Get("ship.txt"));
+		std::unique_ptr<Player> player = std::make_unique<Player>(20.0f, kiko::Pi, kiko::Transform{ {400, 300}, 0, 6 }, kiko::g_manager.Get("ship.txt"));
 		player->m_tag = "Player";
 		player->m_game = this;
+		player->SetDamping(0.9f);
 		m_scene->Add(move(player));
 
 	}
@@ -74,12 +80,27 @@ void SpaceGame::Update(float dt)
 			m_scene->Add(move(enemey));
 		}
 		break;
+	case SpaceGame::eState::PlayerDeadStart:
+		m_stateTimer = 200;
+		if (m_lives == 0) { m_state = eState::GameOver; }
+		else m_state = eState::PlayerDead;
+		
+		break;
 	case SpaceGame::eState::PlayerDead:
-		if (m_lives == 0) m_state = eState::GameOver;
-		else m_state = eState::StartLevel;
+		m_stateTimer -= dt;
+		if (m_stateTimer <= 0)
+		{
+			m_state = eState::StartLevel;
+		}
+		
 
 		break;
 	case SpaceGame::eState::GameOver:
+		m_stateTimer -= dt;
+		if (m_stateTimer == 0)
+		{
+			m_state = eState::Title;
+		}
 		break;
 	default:
 		break;
@@ -94,7 +115,9 @@ void SpaceGame::Draw(kiko::Renderer& renderer)
 	if (m_state == eState::Title) {
 		m_titleText->Draw(renderer, 350, 300);
 	}
-
+	if (m_state == eState::GameOver) {
+		m_gameOverText->Draw(renderer, 350, 300);
+	}
 	m_scoreText->Draw(renderer, 40, 40);
 	m_scene->Draw(renderer);
 }

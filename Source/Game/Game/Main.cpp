@@ -102,13 +102,13 @@ int main(int argc, char* argv[])
 		//draw
 		kiko::Vector2 vel(1.0f, 0.3f);
 
-		for(auto& star : stars){
+		/*for(auto& star : stars){
 			star.Update(kiko::g_Renderer.GetWidth(), kiko::g_Renderer.GetHeight());
 
 			
 			kiko::g_Renderer.SetColor(kiko::random(256), kiko::random(256), kiko::random(256), 255);
 			star.Draw(kiko::g_Renderer);
-		}
+		}*/
 
 		game->Draw(kiko::g_Renderer);
 

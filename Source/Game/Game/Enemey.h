@@ -17,9 +17,13 @@ public:
 	void Update(float dt) override;
 	void OnCollission(Actor* other) override;
 
+	bool GetFaceingPlayer() const { return m_faceingPlayer; }
+	void SetFaceingPlayer(bool faceingPlayer) { m_faceingPlayer = faceingPlayer; }
 private:
 	float m_speed = 0;
 	float m_turnRate = 0;
+
+	bool m_faceingPlayer;
 
 	float m_fireTime = 0;
 	float m_fireTimer = 0;

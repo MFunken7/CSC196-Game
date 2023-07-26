@@ -41,5 +41,6 @@ namespace kiko
 	
 	void Scene::RemoveAll()
 	{
+		m_actors.clear();
 	}
 }

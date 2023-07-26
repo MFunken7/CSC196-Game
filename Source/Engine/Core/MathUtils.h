@@ -1,5 +1,6 @@
 #pragma once
 #include <cmath>
+#include <utility>
 
 namespace kiko {
 	constexpr float Pi = 3.14159265359f;
@@ -40,5 +41,11 @@ namespace kiko {
 		else if (value > max) value = max;
 
 		return  (value < min) ? min : (value > max) ? max : value;
+	}
+
+	template<typename T>
+	constexpr T Lerp(const T& a, const T& b, float t) // t = 0 <-> 1
+	{
+		return (a * (1.0f - t)) + (b * t);
 	}
 }
