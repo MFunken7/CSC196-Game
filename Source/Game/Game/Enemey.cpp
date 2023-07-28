@@ -6,6 +6,7 @@
 #include "Weapon.h"
 #include "Audio/AudioSystem.h"
 #include "SpaceGame.h"
+#include "Framework/Emitter.h"
 
 
 void Enemey::Update(float dt)
@@ -36,7 +37,7 @@ void Enemey::Update(float dt)
 
 	if (m_fireTimer <= 0 && GetFaceingPlayer()) {
 		kiko::Transform transform{ m_transform.position, m_transform.rotation, 1};
-		std::unique_ptr<Weapon> weapon = std::make_unique<Weapon>(40.0f, transform, kiko::g_manager.Get("ship.txt"));
+		std::unique_ptr<Weapon> weapon = std::make_unique<Weapon>(40.0f, transform, kiko::g_manager.Get("bullet.txt"));
 		weapon->m_tag = "EnemeyBullet";
 		m_scene->Add(std::move(weapon));
 		kiko::g_AudioSystem.PlayOneShot("laser");
@@ -52,6 +53,52 @@ void Enemey::OnCollission(Actor* other)
 		if (m_health <= 0) {
 			m_game->AddPoints(100);
 			m_destroyed = true;
+
+
+			kiko::EmitterData data;
+			data.burst = true;
+			data.burstCount = 100;
+			data.spawnRate = 0;
+			data.angle = 0;
+			data.angleRange = kiko::Pi;
+			data.lifetimeMin = 0.5f;
+			data.lifetimeMax = 1.5f;
+			data.speedMin = 50;
+			data.speedMax = 250;
+			data.damping = 0.5f;
+			data.color = kiko::Color{ 0, 1, 0, 1 };
+			kiko::Transform transform{ {m_transform.position }, 0, 1 };
+			auto emitter = std::make_unique<kiko::Emitter>(transform, data);
+			emitter->SetLifespan(1.0f);
+			m_scene->Add(std::move(emitter));
+
+			//add explosion with emitter here
+			//spawnrate 0, position enemy position
+		}
+	}
+	if (other->m_tag == "Player") {
+		m_health = 0;
+		if (m_health <= 0) {
+			m_game->AddPoints(100);
+			m_destroyed = true;
+
+
+			kiko::EmitterData data;
+			data.burst = true;
+			data.burstCount = 100;
+			data.spawnRate = 0;
+			data.angle = 0;
+			data.angleRange = kiko::Pi;
+			data.lifetimeMin = 0.5f;
+			data.lifetimeMax = 1.5f;
+			data.speedMin = 50;
+			data.speedMax = 250;
+			data.damping = 0.5f;
+			data.color = kiko::Color{ 0, 1, 0, 1 };
+			kiko::Transform transform{ {m_transform.position }, 0, 1 };
+			auto emitter = std::make_unique<kiko::Emitter>(transform, data);
+			emitter->SetLifespan(1.0f);
+			m_scene->Add(std::move(emitter));
 
 			//add explosion with emitter here
 			//spawnrate 0, position enemy position

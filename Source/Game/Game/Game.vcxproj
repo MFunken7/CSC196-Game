@@ -155,9 +155,11 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Asteroid.cpp" />
     <ClCompile Include="Enemey.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PointMultiplyer.cpp" />
     <ClCompile Include="SpaceGame.cpp" />
     <ClCompile Include="Weapon.cpp" />
   </ItemGroup>
@@ -179,8 +181,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Asteroid.h" />
     <ClInclude Include="Enemey.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="PointMultiplyer.h" />
     <ClInclude Include="SpaceGame.h" />
     <ClInclude Include="Weapon.h" />
   </ItemGroup>
